@@ -9,7 +9,7 @@ datasource db {
 
 model Repository {
   id           Int           @id @default(autoincrement())
-  githubRepoId Int           @unique // The unique ID from GitHub's API
+  githubRepoId BigInt        @unique // The unique ID from GitHub's API
   owner        String
   name         String
   createdAt    DateTime      @default(now())
@@ -21,7 +21,7 @@ model Repository {
 
 model PullRequest {
   id             Int             @id @default(autoincrement())
-  githubPrId     Int             @unique // The unique ID of the PR from GitHub
+  githubPrId     BigInt             @unique // The unique ID of the PR from GitHub
   repositoryId   Int
   repository     Repository      @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
   
@@ -40,9 +40,9 @@ model PullRequest {
 }
 
 model SecurityEvent {
-  id          Int         @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   pullRequestId Int
-  pullRequest PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
   
   severity    String      // 'high', 'medium', 'low'
   description String
