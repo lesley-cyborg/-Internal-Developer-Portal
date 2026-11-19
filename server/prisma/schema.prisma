@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Repository {
+  id           Int           @id @default(autoincrement())
+  githubRepoId Int           @unique // The unique ID from GitHub's API
+  owner        String
+  name         String
+  createdAt    DateTime      @default(now())
+  
+  pullRequests PullRequest[]
+
+  @@map("repositories")
+}
+
+model PullRequest {
+  id             Int             @id @default(autoincrement())
+  githubPrId     Int             @unique // The unique ID of the PR from GitHub
+  repositoryId   Int
+  repository     Repository      @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  
+  number         Int             // The PR number (e.g., #42)
+  title          String
+  author         String
+  state          String          // 'open', 'closed', 'merged'
+  securityStatus String          @default("clean") // 'clean', 'blocked'
+  
+  createdAt      DateTime
+  mergedAt       DateTime?
+  
+  securityEvents SecurityEvent[]
+
+  @@map("pull_requests")
+}
+
+model SecurityEvent {
+  id          Int         @id @default(autoincrement())
+  pullRequestId Int
+  pullRequest PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  
+  severity    String      // 'high', 'medium', 'low'
+  description String
+  createdAt   DateTime    @default(now())
+
+  @@map("security_events")
+}
+
+model WebhookEvent {
+  id         Int      @id @default(autoincrement())
+  deliveryId String   @unique // The X-GitHub-Delivery header from GitHub
+  event      String   // The X-GitHub-Event header (e.g., 'pull_request')
+  createdAt  DateTime @default(now())
+
+  @@map("webhook_events")
+}
