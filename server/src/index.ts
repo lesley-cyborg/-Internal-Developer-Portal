@@ -1,3 +1,4 @@
+import dashboardRouter from './routes/dashboard';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import crypto from 'crypto';
@@ -26,15 +27,19 @@ app.use((req: any, res: Response, next: NextFunction) => {
     rawData += chunk;
   });
   req.on('end', () => {
-    // Store the EXACT raw string for HMAC verification (GitHub signs the exact bytes sent)
+    // Store the EXACT raw string for HMAC verification
     req.rawBody = Buffer.from(rawData, 'utf8');
     
     try {
-      // Defensive check: GitHub sometimes sends form-urlencoded despite settings
       let jsonString = rawData;
+      
+      // Defensive check: GitHub sometimes sends form-urlencoded despite settings
       if (rawData.startsWith('payload=')) {
-        console.warn('⚠️ Webhook received as form-urlencoded. Please change GitHub Content-Type to application/json');
-        jsonString = rawData.substring(8); // Strip "payload=" to get the JSON
+        console.warn('⚠️ Webhook received as form-urlencoded. Decoding...');
+        // 1. Strip "payload="
+        const encodedPayload = rawData.substring(8);
+        // 2. Decode the URL-encoded string (e.g., %7B becomes { )
+        jsonString = decodeURIComponent(encodedPayload);
       }
       
       req.body = jsonString ? JSON.parse(jsonString) : {};
@@ -45,6 +50,8 @@ app.use((req: any, res: Response, next: NextFunction) => {
     next();
   });
 });
+
+app.use('/api/v1', dashboardRouter);
 
 // 3. HMAC Signature Verification Middleware
 const verifyGitHubSignature = (req: Request, res: Response, next: NextFunction) => {

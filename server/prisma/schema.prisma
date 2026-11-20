@@ -29,7 +29,7 @@ model PullRequest {
   title          String
   author         String
   state          String          // 'open', 'closed', 'merged'
-  securityStatus String          @default("clean") // 'clean', 'blocked'
+  securityStatus String          @default("clean") @map("security_status")  // 'clean', 'blocked'
   
   createdAt      DateTime
   mergedAt       DateTime?
@@ -41,12 +41,12 @@ model PullRequest {
 
 model SecurityEvent {
   id            Int         @id @default(autoincrement())
-  pullRequestId Int
+  pullRequestId Int         @map("pull_request_id")
   pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
   
   severity    String      // 'high', 'medium', 'low'
   description String
-  createdAt   DateTime    @default(now())
+  createdAt   DateTime    @default(now()) @map("created_at")
 
   @@map("security_events")
 }

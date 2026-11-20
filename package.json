@@ -1,0 +1,25 @@
+{
+  "name": "devpulse-dashboard",
+  "version": "1.0.0",
+  "description": "Internal Developer Portal & Security Posture Dashboard",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently --names \"SERVER,CLIENT,TUNNEL\" --prefix-colors \"blue,green,yellow\" \"npm run dev --prefix server\" \"npm run dev --prefix client\" \"npx cloudflared tunnel --url http://localhost:3001\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "build": "npm run build --prefix server && npm run build --prefix client"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lesley-cyborg/-Internal-Developer-Portal.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lesley-cyborg/-Internal-Developer-Portal/issues"
+  },
+  "homepage": "https://github.com/lesley-cyborg/-Internal-Developer-Portal#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  }
+}
