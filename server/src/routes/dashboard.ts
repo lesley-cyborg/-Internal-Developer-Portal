@@ -71,7 +71,7 @@ router.get('/metrics/summary', async (req: Request, res: Response) => {
     let avg_time_to_merge_hours = null;
     const mergedTimes = allPrs
       .filter(pr => pr.mergedAt && pr.createdAt)
-      .map(pr => (new Date(pr.mergedAt).getTime() - new Date(pr.createdAt).getTime()) / (1000 * 60 * 60));
+      .map(pr => (new Date(pr.mergedAt!).getTime() - new Date(pr.createdAt!).getTime()) / (1000 * 60 * 60));
     
     if (mergedTimes.length > 0) {
       const sum = mergedTimes.reduce((a, b) => a + b, 0);
